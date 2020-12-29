@@ -1,6 +1,6 @@
 import { NotionRenderer, BlockMapType } from "react-notion";
-
-import { getAllPosts, Post } from "../";
+import notionConfig from "@configs/notionConfig";
+import { getAllPosts, Post } from "@pages/index";
 
 export async function getStaticProps({
   params: { slug },
@@ -13,9 +13,8 @@ export async function getStaticProps({
   // Find the current blogpost by slug
   const post = posts.find((t) => t.slug === slug);
 
-  const blocks = await fetch(
-    `https://notion-cloudflare-worker.rchien.workers.dev/v1/page/${post!.id}`
-  ).then((res) => res.json());
+  const postUri = `${notionConfig.hostName}/v1/page/${post!.id}`;
+  const blocks = await fetch(postUri).then((res) => res.json());
 
   return {
     props: {
