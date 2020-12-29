@@ -14,7 +14,7 @@ export async function getStaticProps({
   const post = posts.find((t) => t.slug === slug);
 
   const blocks = await fetch(
-    `https://notion-api.splitbee.io/v1/page/${post!.id}`
+    `https://notion-cloudflare-worker.rchien.workers.dev/page/${post!.id}`
   ).then((res) => res.json());
 
   return {
