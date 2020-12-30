@@ -1,49 +1,76 @@
+import { useRouter } from "next/router";
 import { NotionRenderer, BlockMapType } from "react-notion";
-import notionConfig from "@configs/notionConfig";
-import { getAllPosts, Post } from "@pages/index";
+import { getAllPosts, getPostById } from "@utils/notionApiClient";
+import Post from "@utils/post";
 
-export async function getStaticProps({
-  params: { slug },
-}: {
-  params: { slug: string };
-}) {
-  // Get all posts again
-  const posts = await getAllPosts();
+type Params = {
+  params: {
+    slug: string;
+  };
+};
+
+export async function getStaticProps({ params }: Params) {
+  if (!params.slug) {
+    return { notFound: true };
+  }
+
+  const slugMap = new Map((await getAllPosts()).map((p) => [p.slug, p]));
 
   // Find the current blogpost by slug
-  const post = posts.find((t) => t.slug === slug);
+  var post = slugMap.get(params.slug);
+  if (post?.id === undefined) {
+    return { notFound: true };
+  }
 
-  const postUri = `${notionConfig.hostName}/v1/page/${post!.id}`;
-  const blocks = await fetch(postUri).then((res) => res.json());
+  const blocks = await getPostById(post.id);
 
   return {
     props: {
-      blocks,
-      post,
+      post: post,
+      blocks: blocks,
     },
   };
 }
 
-const BlogPost: React.FC<{ post: Post; blocks: BlockMapType }> = ({
-  post,
-  blocks,
-}) => {
-  if (!post) return null;
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+
+  const paths = posts
+    .filter((fp) => fp.publish === true)
+    .map((mp) => ({
+      params: { slug: mp.slug },
+    }));
+
+  return {
+    paths: paths,
+    fallback: true,
+  };
+}
+
+type Props = {
+  post: Post,
+  blocks: BlockMapType
+}
+
+const BlogPost = ({ post, blocks }: Props) => {
+  const { isFallback } = useRouter();
+  console.log(`isFallback - ${isFallback}`);
+
+  if (isFallback) {
+    return (
+      <div className="content">
+        <h1>skeleton</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="content">
+      <h1>{isFallback ? "statically generating" : "statically generated"}</h1>
       <h1>{post.title}</h1>
       <NotionRenderer blockMap={blocks} />
     </div>
   );
 };
-
-export async function getStaticPaths() {
-  const table = await getAllPosts();
-  return {
-    paths: table.map((row) => `/blog/${row.slug}`),
-    fallback: true,
-  };
-}
 
 export default BlogPost;

@@ -1,14 +1,6 @@
 import Link from "next/link";
-import notionConfig from "@configs/notionConfig";
-
-const NOTION_BLOG_ID = process.env.NOTION_BLOG_ID || notionConfig.tableUuid;
-const NOTION_TABLE_URI = `${notionConfig.hostName}/v1/table/${NOTION_BLOG_ID}`;
-
-export type Post = { id: string; slug: string; title: string; date: string };
-
-export const getAllPosts = async (): Promise<Post[]> => {
-  return await fetch(NOTION_TABLE_URI).then((res) => res.json());
-};
+import { getAllPosts } from "@utils/notionApiClient";
+import Post from "@utils/post";
 
 export async function getStaticProps() {
   const posts = await getAllPosts();
