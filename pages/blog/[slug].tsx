@@ -1,7 +1,8 @@
+import { FunctionComponent } from 'react'
 import { useRouter } from "next/router";
 import { NotionRenderer, BlockMapType } from "react-notion";
-import { getAllPosts, getPostById } from "@utils/notionApiClient";
-import Post from "@utils/post";
+import { getAllPosts, getPostById } from "@/utils/notionApiClient";
+import Post from "@/types/post";
 
 type Params = {
   params: {
@@ -14,7 +15,7 @@ export async function getStaticProps({ params }: Params) {
     return { notFound: true };
   }
 
-  const slugMap = new Map((await getAllPosts()).map((p) => [p.slug, p]));
+  const slugMap = new Map(((await getAllPosts()).filter(p => p.publish === true)).map((p) => [p.slug, p]));
 
   // Find the current blogpost by slug
   var post = slugMap.get(params.slug);
@@ -52,23 +53,25 @@ type Props = {
   blocks: BlockMapType
 }
 
-const BlogPost = ({ post, blocks }: Props) => {
+const BlogPost: FunctionComponent<Props> = ({ post, blocks }: Props) => {
   const { isFallback } = useRouter();
   console.log(`isFallback - ${isFallback}`);
 
-  if (isFallback) {
-    return (
-      <div className="content">
-        <h1>skeleton</h1>
-      </div>
-    );
+  if (!isFallback && !post) {
+    return (<h1>404</h1>)
   }
 
   return (
     <div className="content">
-      <h1>{isFallback ? "statically generating" : "statically generated"}</h1>
-      <h1>{post.title}</h1>
-      <NotionRenderer blockMap={blocks} />
+      <p>{isFallback ? "generating on-demand" : "statically generated"} </p>
+      {isFallback ? (
+        <h1>Loading...</h1>
+      ) : (
+        <div>
+          <h1>{post.title}</h1>
+          <NotionRenderer blockMap={blocks} />
+        </div>
+      )}
     </div>
   );
 };

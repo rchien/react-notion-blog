@@ -19,12 +19,9 @@
     "target": "esnext",
     "baseUrl": ".",
     "paths": {
-      "@pages/*": ["./pages/*"],
-      "@configs/*": ["./configs/*"],
-      "@utils/*": ["./utils/*"],
-      "@components/*": ["./components/*"]
+      "@/*": ["./*"]
     }
   },
   "exclude": ["node_modules"],
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }

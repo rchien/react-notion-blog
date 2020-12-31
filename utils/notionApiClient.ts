@@ -1,5 +1,5 @@
-import notionConfig from "@configs/notionConfig";
-import Post from "@utils/post";
+import notionConfig from "@/configs/notionConfig";
+import Post from "@/types/post";
 
 const NOTION_BLOG_ID = process.env.NOTION_BLOG_ID || notionConfig.tableUuid;
 const NOTION_TABLE_URI = `${notionConfig.hostName}/v1/table/${NOTION_BLOG_ID}`;

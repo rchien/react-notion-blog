@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getAllPosts } from "@utils/notionApiClient";
-import Post from "@utils/post";
+import { getAllPosts } from "@/utils/notionApiClient";
+import Post from "@/types/post";
 
 export async function getStaticProps() {
   const posts = await getAllPosts();
