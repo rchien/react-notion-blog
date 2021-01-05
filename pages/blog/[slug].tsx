@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react'
 import { useRouter } from "next/router";
 import { NotionRenderer, BlockMapType } from "react-notion";
-import { getAllPosts, getPostById } from "@/utils/notionApiClient";
+import { getAllPublicPosts, getPostById } from "@/utils/notionApiClient";
 import Post from "@/types/post";
 
 type Params = {
@@ -15,7 +15,7 @@ export async function getStaticProps({ params }: Params) {
     return { notFound: true };
   }
 
-  const slugMap = new Map((await getAllPosts()).map((p) => [p.slug, p]));
+  const slugMap = new Map((await getAllPublicPosts()).map((p) => [p.slug, p]));
 
   // Find the current blogpost by slug
   var post = slugMap.get(params.slug);
@@ -34,7 +34,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const posts = await getAllPosts();
+  const posts = await getAllPublicPosts();
 
   const paths = posts
     .filter((fp) => fp.publish === true)

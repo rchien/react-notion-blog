@@ -1,17 +1,23 @@
 import Link from "next/link";
-import { getAllPosts } from "@/utils/notionApiClient";
+import { getAllPublicPosts } from "@/utils/notionApiClient";
 import Post from "@/types/post";
+import { FunctionComponent } from "react";
+
 
 export async function getStaticProps() {
-  const posts = await getAllPosts();
+  const posts = await getAllPublicPosts();
   return {
     props: {
-      posts,
+      posts: posts,
     },
   };
 }
 
-function HomePage({ posts }: { posts: Post[] }) {
+type Props = {
+  posts: Post[];
+};
+
+const HomePage: FunctionComponent<Props> = ({ posts }: Props) => {
   return (
     <div className="content">
       <a href="" className="text-5xl text-red-100">
@@ -30,6 +36,6 @@ function HomePage({ posts }: { posts: Post[] }) {
       </div>
     </div>
   );
-}
+};
 
 export default HomePage;
