@@ -15,7 +15,7 @@ export async function getStaticProps({ params }: Params) {
     return { notFound: true };
   }
 
-  const slugMap = new Map(((await getAllPosts()).filter(p => p.publish === true)).map((p) => [p.slug, p]));
+  const slugMap = new Map((await getAllPosts()).map((p) => [p.slug, p]));
 
   // Find the current blogpost by slug
   var post = slugMap.get(params.slug);
@@ -44,7 +44,7 @@ export async function getStaticPaths() {
 
   return {
     paths: paths,
-    fallback: true,
+    fallback: false,
   };
 }
 
